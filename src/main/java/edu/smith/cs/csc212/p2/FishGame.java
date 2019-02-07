@@ -28,6 +28,13 @@ public class FishGame {
 	 */
 	List<Fish> missing;
 	
+	
+	//initialize lost scared list
+	List<Fish> fastScared;
+	
+	//initialize lost not scared list
+	List<Fish> slowScared;
+	
 	/**
 	 * These are fish we've found!
 	 */
@@ -57,13 +64,17 @@ public class FishGame {
 		missing = new ArrayList<Fish>();
 		found = new ArrayList<Fish>();
 		
+		//create an array to hold lost, scared fish
+		fastScared = new ArrayList<Fish>();
+		slowScared = new ArrayList<Fish>();
+		
+		
 		// Add a home!
 		home = world.insertFishHome();
 		
 		
 		
-		// TODO(lab) Generate some more rocks!
-		// TODO(lab) Make 5 into a constant, so it's easier to find & change.
+		
 		for (int i=0; i<NUM_ROCKS; i++) {
 			world.insertRockRandomly();
 		}
@@ -83,6 +94,22 @@ public class FishGame {
 		for (int ft = 1; ft < Fish.COLORS.length; ft++) {
 			Fish friend = world.insertFishRandomly(ft);
 			missing.add(friend);
+		}
+		
+		
+		//add fish to slow and fast based on a rand
+		Random rand2 = ThreadLocalRandom.current();
+		
+		for (Fish lost : missing) {
+			
+			if (rand2.nextDouble() <0.3) {
+				slowScared.add(lost);
+			}
+			
+			else {
+				fastScared.add(lost);
+				
+			}
 		}
 	}
 	
@@ -123,9 +150,11 @@ public class FishGame {
 				// Remove this fish from the missing list.
 				missing.remove(wo);
 				
-				// Remove from world.
-				// TODO(lab): add to found instead! (So we see objectsFollow work!)
-				world.remove(wo);
+				
+				
+				
+				found.add((Fish) wo);
+				
 				
 				// Increase score when you find a fish!
 				score += 10;
@@ -145,15 +174,18 @@ public class FishGame {
 	 */
 	private void wanderMissingFish() {
 		Random rand = ThreadLocalRandom.current();
-		for (Fish lost : missing) {
-			// 30% of the time, lost fish move randomly.
-			if (rand.nextDouble() < 0.3) {
-				
-				lost.moveRandomly();
-				
+		
+		
+		
+		for (Fish fast : fastScared) {
+			if(rand.nextDouble()>0.2) {
+				fast.moveRandomly();
 			}
 		}
-	}
+			
+			
+		}
+	
 
 	/**
 	 * This gets a click on the grid. We want it to destroy rocks that ruin the game.
